@@ -1,0 +1,33 @@
+table  {
+  border-collapse: collapse;
+}
+
+td {
+  border: solid 1px;
+  padding: 0.5em;
+}
+
+table .cell
+{
+  background: #090;
+}
+
+
+table .cell > .disc
+{
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  border-radius: 1em;
+  margin: 0.25em;
+}
+
+table .cell.white > .disc
+{
+  background: #fff;
+}
+
+table .cell.black > .disc
+{
+  background: #000;
+}
