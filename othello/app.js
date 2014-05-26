@@ -78,13 +78,79 @@ function drawGameBoard() {
 
 /*
  * -------------------------------
+ * ある点に着手したときに返される石のリストを取得する
+ * -------------------------------
+ */
+function getCoveredStones(x,y) {
+  var seeds = [];
+  if (board[x][y] != EMPTY) {
+    return seeds;
+  }
+
+  // 上方向
+  for (var i = y; i > 0; i--) {
+    if (board[x][i] == player) {
+      for (var j = y-1; j > i; j--) {
+        seeds.push([x,j]);
+      }
+      continue;
+    }
+  }
+  // 下方向
+  for (var i = y; i < N; i++) {
+    if (board[x][i] == player) {
+      for (var j = y+1; j < i; j++) {
+        seeds.push([x,j]);
+      }
+      continue;
+    }
+  }
+  // 左方向
+  for (var i = x; i > 0; i--) {
+    if (board[i][y] == player) {
+      for (var j = x-1; j > i; j--) {
+        seeds.push([j,y]);
+      }
+      continue;
+    }
+  }
+  // 右方向
+  for (var i = x; i < N; i++) {
+    if (board[i][y] == player) {
+      for (var j = x+1; j < i; j++) {
+        seeds.push([j,y]);
+      }
+      continue;
+    }
+  }
+
+  return seeds;
+}
+
+/*
+ * -------------------------------
  * 着手する
  * -------------------------------
  */
 function putStone(x,y) {
+  var seeds = getCoveredStones(x,y);
+  if (seeds.length == 0) {
+    return -1;
+  }
+
   board[x][y] = player;
-  nextTurn();
+  for (var i = 0; i < seeds.length; i++) {
+    console.log(getOthelloCell(seeds[i][0], seeds[i][1]));
+    board[seeds[i][0]][seeds[i][1]] = player;
+  }
+
+  // 再描画
   drawGameBoard();
+
+  // 手順を交代する
+  nextTurn();
+
+  return 0;
 }
 
 /*
@@ -100,6 +166,18 @@ function nextTurn() {
   }
 }
 
+
+
+/*
+ * -------------------------------
+ * boardの座標を入力として、オセロボードの座標に変換する
+ * -------------------------------
+ */
+function getOthelloCell(x,y) {
+  var oX = 'abcdefgh'[x];
+  var oY = '12345678'[y];
+  return [oX, oY];
+}
 /*
  * -------------------------------
  * デバッグ情報を出力する
