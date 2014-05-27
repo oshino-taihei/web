@@ -87,40 +87,42 @@ function getCoveredStones(x,y) {
     return seeds;
   }
 
+  var opponent = getOpponent();
   // 上方向
-  for (var i = y; i > 0; i--) {
+  for (var i = y-1; i > 0; i--) {
     if (board[x][i] == player) {
-      for (var j = y-1; j > i; j--) {
-        seeds.push([x,j]);
+      for (var j = y-1; j > i && board[x][j] == opponent; j--) {
+         seeds.push([x,j]);
       }
-      continue;
+      break;
     }
   }
+
   // 下方向
-  for (var i = y; i < N; i++) {
+  for (var i = y+1; i < N; i++) {
     if (board[x][i] == player) {
-      for (var j = y+1; j < i; j++) {
+      for (var j = y+1; j < i && board[x][j] == opponent; j++) {
         seeds.push([x,j]);
       }
-      continue;
+      break;
     }
   }
   // 左方向
-  for (var i = x; i > 0; i--) {
+  for (var i = x-1; i > 0; i--) {
     if (board[i][y] == player) {
-      for (var j = x-1; j > i; j--) {
+      for (var j = x-1; j > i && board[j][y] == opponent; j--) {
         seeds.push([j,y]);
       }
-      continue;
+      break;
     }
   }
   // 右方向
-  for (var i = x; i < N; i++) {
+  for (var i = x+1; i < N; i++) {
     if (board[i][y] == player) {
-      for (var j = x+1; j < i; j++) {
+      for (var j = x+1; j < i && board[j][y] == opponent; j++) {
         seeds.push([j,y]);
       }
-      continue;
+      break;
     }
   }
 
@@ -140,7 +142,6 @@ function putStone(x,y) {
 
   board[x][y] = player;
   for (var i = 0; i < seeds.length; i++) {
-    console.log(getOthelloCell(seeds[i][0], seeds[i][1]));
     board[seeds[i][0]][seeds[i][1]] = player;
   }
 
@@ -155,15 +156,24 @@ function putStone(x,y) {
 
 /*
  * -------------------------------
+ * 対戦相手(の色)を取得する
+ * -------------------------------
+ */
+function getOpponent() {
+  if (player == WHITE) {
+    return BLACK;
+  } else if (player == BLACK) {
+    return WHITE;
+  }
+}
+
+/*
+ * -------------------------------
  * 次のターンに進む(プレイヤーを交代する)
  * -------------------------------
  */
 function nextTurn() {
-  if (player == WHITE) {
-    player = BLACK;
-  } else if (player == BLACK) {
-    player = WHITE;
-  }
+  player = getOpponent();
 }
 
 
