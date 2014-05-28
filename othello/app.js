@@ -21,7 +21,7 @@ function initBoard(size) {
   var x = 0;
   var y = 0;
   for (var x = 0; x < size; x++) {
-    board[x] = []
+    board[x] = [];
     for (var y = 0; y < size; y++) {
       board[x][y] = EMPTY;
     }
@@ -97,7 +97,6 @@ function getCoveredStones(x,y) {
       break;
     }
   }
-
   // 下方向
   for (var i = y+1; i < N; i++) {
     if (board[x][i] == player) {
@@ -125,6 +124,42 @@ function getCoveredStones(x,y) {
       break;
     }
   }
+  // 右上方向
+  for (var i = 1; x+i < N && y-i > 0; i++) {
+    if (board[x+i][y-i] == player) {
+      for (var j = 1; j < i && board[x+j][y-j] == opponent; j++) {
+        seeds.push([x+j, y-j]);
+      }
+      break;
+    }
+  }
+  // 右下方向
+  for (var i = 1; x+i < N && y+i < N; i++) {
+    if (board[x+i][y+i] == player) {
+      for (var j = 1; j < i && board[x+j][y+j] == opponent; j++) {
+        seeds.push([x+j, y+j]);
+      }
+      break;
+    }
+  }
+  // 左上方向
+  for (var i = 1; x-i > 0 && y+i < N; i++) {
+    if (board[x-i][y+i] == player) {
+      for (var j = 1; j < i && board[x-j][y+j] == opponent; j++) {
+        seeds.push([x-j, y+j]);
+      }
+      break;
+    }
+  }
+  // 左下方向
+  for (var i = 1; x-i > 0 && y-i > 0; i++) {
+    if (board[x-i][y-i] == player) {
+      for (var j = 1; j < i && board[x-j][y-j] == opponent; j++) {
+        seeds.push([x-j, y-j]);
+      }
+      break;
+    }
+  }
 
   return seeds;
 }
@@ -145,11 +180,11 @@ function putStone(x,y) {
     board[seeds[i][0]][seeds[i][1]] = player;
   }
 
-  // 再描画
-  drawGameBoard();
-
   // 手順を交代する
   nextTurn();
+
+  // 再描画
+  drawGameBoard();
 
   return 0;
 }
