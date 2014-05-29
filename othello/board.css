@@ -31,3 +31,8 @@ table .cell.black > .disc
 {
   background: #000;
 }
+
+table .cell.candi > .disc
+{
+  opacity: 0.2;
+}

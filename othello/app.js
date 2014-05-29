@@ -54,7 +54,12 @@ function drawGameBoard() {
         ss.push('<td class="');
         ss.push('cell');
         ss.push(' ');
-        ss.push(board[x][y]);
+        if (getCoveredStones(x,y).length > 0) {
+          ss.push(player + ' candi '); 
+          attackable = true;
+        } else {
+          ss.push(board[x][y]);
+        }
         ss.push('">');
         ss.push('<span class="disc" onClick="putStone(' + x + ',' + y + ');"></span>');
         ss.push('</td>');
@@ -74,6 +79,7 @@ function drawGameBoard() {
   ss.push('<div id="info">PLAYER: ' + player + '</div>');
 
   document.getElementById('main').innerHTML = ss.join('');
+
 }
 
 /*
@@ -95,6 +101,8 @@ function getCoveredStones(x,y) {
          seeds.push([x,j]);
       }
       break;
+    } else if (board[x][i] == EMPTY) {
+      break;
     }
   }
   // 下方向
@@ -103,6 +111,8 @@ function getCoveredStones(x,y) {
       for (var j = y+1; j < i && board[x][j] == opponent; j++) {
         seeds.push([x,j]);
       }
+      break;
+    } else if (board[x][i] == EMPTY) {
       break;
     }
   }
@@ -113,6 +123,8 @@ function getCoveredStones(x,y) {
         seeds.push([j,y]);
       }
       break;
+    } else if (board[i][y] == EMPTY) {
+      break;
     }
   }
   // 右方向
@@ -121,6 +133,8 @@ function getCoveredStones(x,y) {
       for (var j = x+1; j < i && board[j][y] == opponent; j++) {
         seeds.push([j,y]);
       }
+      break;
+    } else if (board[i][y] == EMPTY) {
       break;
     }
   }
@@ -131,6 +145,8 @@ function getCoveredStones(x,y) {
         seeds.push([x+j, y-j]);
       }
       break;
+    } else if (board[x+i][y-i] == EMPTY) {
+      break;
     }
   }
   // 右下方向
@@ -139,6 +155,8 @@ function getCoveredStones(x,y) {
       for (var j = 1; j < i && board[x+j][y+j] == opponent; j++) {
         seeds.push([x+j, y+j]);
       }
+      break;
+    } else if (board[x+i][y+i] == EMPTY) {
       break;
     }
   }
@@ -149,6 +167,8 @@ function getCoveredStones(x,y) {
         seeds.push([x-j, y+j]);
       }
       break;
+    } else if (board[x-i][y+i] == EMPTY) {
+      break;
     }
   }
   // 左下方向
@@ -157,6 +177,8 @@ function getCoveredStones(x,y) {
       for (var j = 1; j < i && board[x-j][y-j] == opponent; j++) {
         seeds.push([x-j, y-j]);
       }
+      break;
+    } else if (board[x-i][y-i] == EMPTY) {
       break;
     }
   }
@@ -204,13 +226,31 @@ function getOpponent() {
 
 /*
  * -------------------------------
+ * 着手可能手があればtrue,なければfalse
+ * -------------------------------
+ */
+function isAttackable() {
+  for (var x = 0; x < N; x++){
+    for (var y = 0; y < N; y++) {
+      if (getCoveredStones(x,y).length > 0) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/*
+ * -------------------------------
  * 次のターンに進む(プレイヤーを交代する)
  * -------------------------------
  */
 function nextTurn() {
   player = getOpponent();
+  if (!isAttackable()) {
+    player = getOpponent();
+  }
 }
-
 
 
 /*
