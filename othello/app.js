@@ -8,21 +8,27 @@ const EMPTY = 'empty';
 const WHITE = 'white';
 const BLACK = 'black';
 
-var board = initBoard(N);
-var player = BLACK;
+const MODE_SOLO = 'solo';
+const MODE_COM = 'com';
+
+// 各種ボードの情報を保持
+var board = [];
+var player;
+var mode = MODE_SOLO;
+var white_num;
+var black_num;
 
 /*
  * -------------------------------
  * ボードを初期化する
  * -------------------------------
  */
-function initBoard(size) {
-  var board  = [size];
+function initBoard() {
   var x = 0;
   var y = 0;
-  for (var x = 0; x < size; x++) {
+  for (var x = 0; x < N; x++) {
     board[x] = [];
-    for (var y = 0; y < size; y++) {
+    for (var y = 0; y < N; y++) {
       board[x][y] = EMPTY;
     }
   }
@@ -33,8 +39,9 @@ function initBoard(size) {
   board[xhalf][yhalf - 1] = BLACK;
   board[xhalf - 1][yhalf] = BLACK;
   board[xhalf][yhalf] = WHITE;
-  
-  return board;
+
+  player = BLACK;
+  drawGameBoard();
 }
 
 
@@ -46,11 +53,20 @@ function initBoard(size) {
 function drawGameBoard() {
   /* ゲームボードを描画する */
   var ss = [];
+  white_num = 0;
+  black_num = 0;
   ss.push('<table>');
   for (var y = -1; y < N; y++) {
     ss.push('<tr>');
     for (var x = -1; x < N; x++) {
       if (0 <= y && 0 <= x) {
+        // 石の数を数える
+        if (board[x][y] == WHITE) {
+          white_num++;
+        } else if (board[x][y] == BLACK) {
+          black_num++;
+        }
+        // HTML生成
         ss.push('<td class="');
         ss.push('cell');
         ss.push(' ');
@@ -75,7 +91,23 @@ function drawGameBoard() {
   }
   ss.push('</table>');
   
-  /* 情報を表示する */
+  // 情報を表示する
+  ss.push('</br>');
+  ss.push('<table>');
+  ss.push('<tr>');
+  ss.push('<th>white</th>');
+  ss.push('<th>black</th>');
+  ss.push('</tr>');
+  ss.push('<tr>');
+  ss.push('<td class="info white"><span class="disc"></span></td>');
+  ss.push('<td class="info black"><span class="disc"></span></td>');
+  ss.push('</tr>');
+  ss.push('<tr>');
+  ss.push('<td><span class="score">' + white_num + '</span></td>');
+  ss.push('<td><span class="score">' + black_num + '</span></td>');
+  ss.push('</tr>');
+  ss.push('</table>');
+  
   ss.push('<div id="info">PLAYER: ' + player + '</div>');
 
   document.getElementById('main').innerHTML = ss.join('');
@@ -279,6 +311,4 @@ function debugInfo() {
  * ============
  */
 
-const N = 8;
-var board = initBoard(N);
-drawGameBoard(board);
+initBoard();

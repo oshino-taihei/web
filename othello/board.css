@@ -12,8 +12,12 @@ table .cell
   background: #090;
 }
 
+table .info
+{
+  background: #ccc;
+}
 
-table .cell > .disc
+table .disc
 {
   display: inline-block;
   width: 2em;
@@ -22,17 +26,17 @@ table .cell > .disc
   margin: 0.25em;
 }
 
-table .cell.white > .disc
+table .white > .disc
 {
   background: #fff;
 }
 
-table .cell.black > .disc
+table .black > .disc
 {
   background: #000;
 }
 
-table .cell.candi > .disc
+table .candi > .disc
 {
   opacity: 0.2;
 }
