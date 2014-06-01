@@ -3,20 +3,30 @@
  * グローバル変数
  * ==========================
  */
-const N = 8;
+const N = 8; // ボードのサイズ(一辺のセル数)
+
+// プレイヤー・石
 const EMPTY = 'empty';
 const WHITE = 'white';
 const BLACK = 'black';
 
-const MODE_SOLO = 'solo';
-const MODE_COM = 'com';
+// プレイヤーモード
+const MODE_SOLO = 'player';
+const MODE_COM = 'COM';
+const MODE_LIST = [MODE_SOLO, MODE_COM];
 
+// -----------------------
 // 各種ボードの情報を保持
-var board = [];
-var player;
-var mode = MODE_SOLO;
-var white_num;
-var black_num;
+// -----------------------
+var board = []; // ボードの状態
+var player; // 現在のプレイヤー(WHITE or BLACK)
+//var player_white = MODE_COM;
+var player_white = MODE_SOLO;
+var player_black = MODE_SOLO;
+var white_num; // 白石の数
+var black_num; // 黒石の数
+var lastX; // 最終着手x座標
+var lastY; // 着手着手y座標
 
 /*
  * -------------------------------
@@ -70,12 +80,19 @@ function drawGameBoard() {
         ss.push('<td class="');
         ss.push('cell');
         ss.push(' ');
+        
+        // -- 着手可能位置
         if (getCoveredStones(x,y).length > 0) {
           ss.push(player + ' candi '); 
           attackable = true;
         } else {
           ss.push(board[x][y]);
         }
+        // -- 最終着手位置
+        if (x == lastX && y == lastY) {
+          ss.push(' last');
+        }
+
         ss.push('">');
         ss.push('<span class="disc" onClick="putStone(' + x + ',' + y + ');"></span>');
         ss.push('</td>');
@@ -106,12 +123,33 @@ function drawGameBoard() {
   ss.push('<td><span class="score">' + white_num + '</span></td>');
   ss.push('<td><span class="score">' + black_num + '</span></td>');
   ss.push('</tr>');
+  ss.push('<tr>');
+
+  ss.push('<td><span class="mode">' + makePlayerModeSelector(WHITE) + '</span></td>');
+  ss.push('<td><span class="mode">' + makePlayerModeSelector(BLACK) + '</span></td>');
+  ss.push('</tr>');
   ss.push('</table>');
   
   ss.push('<div id="info">PLAYER: ' + player + '</div>');
 
   document.getElementById('main').innerHTML = ss.join('');
 
+}
+
+/*
+ * プレイヤーモードを選択するリストボックスHTMLを生成する
+ */
+function makePlayerModeSelector(target_player) {
+  var ms = []; // modeSelect
+  ms.push('<select name="' + target_player + '">');
+  for (var i = 0; i < MODE_LIST.length; i++) {
+    ms.push('<option>');
+    ms.push(MODE_LIST[i]);
+    ms.push('</option>');
+  }
+  ms.push('</select>');
+  console.log(ms.join(''));
+  return ms.join('');
 }
 
 /*
@@ -225,20 +263,23 @@ function getCoveredStones(x,y) {
  */
 function putStone(x,y) {
   var seeds = getCoveredStones(x,y);
+  // 着手不可能な位置ならば着手せず終了
   if (seeds.length == 0) {
     return -1;
   }
 
+  // 着手し石を返す
   board[x][y] = player;
   for (var i = 0; i < seeds.length; i++) {
     board[seeds[i][0]][seeds[i][1]] = player;
   }
 
+  // 最後の着手位置を記憶する
+  lastX = x;
+  lastY = y;
+
   // 手順を交代する
   nextTurn();
-
-  // 再描画
-  drawGameBoard();
 
   return 0;
 }
@@ -274,16 +315,44 @@ function isAttackable() {
 
 /*
  * -------------------------------
- * 次のターンに進む(プレイヤーを交代する)
+ * 次のターンに進む
  * -------------------------------
  */
 function nextTurn() {
+  // プレイヤー交代
   player = getOpponent();
   if (!isAttackable()) {
     player = getOpponent();
   }
+
+  // 再描画
+  drawGameBoard();
+
+  // COMモードなら自動で着手
+  if ( player == WHITE && player_white == MODE_COM
+    || player == BLACK && player_black == MODE_COM) {
+
+    var comStone = calcGame();
+    putStone(comStone[0], comStone[1]);
+  }
 }
 
+
+/*
+ * -------------------------------
+ * 最適な手を計算し、その着手位置を返す
+ * -------------------------------
+ */
+function calcGame() {
+  for (var x = 0; x < N; x++) {
+    for (var y = 0; y < N; y++) {
+      if (getCoveredStones(x, y).length > 0) {
+        console.log(getOthelloCell(x, y));
+        return [x, y];
+      }
+    }
+  }
+}
 
 /*
  * -------------------------------
@@ -295,6 +364,7 @@ function getOthelloCell(x,y) {
   var oY = '12345678'[y];
   return [oX, oY];
 }
+
 /*
  * -------------------------------
  * デバッグ情報を出力する

@@ -12,6 +12,11 @@ table .cell
   background: #090;
 }
 
+table .last
+{
+  background: #dd0;
+}
+
 table .info
 {
   background: #ccc;
@@ -40,3 +45,4 @@ table .candi > .disc
 {
   opacity: 0.2;
 }
+
