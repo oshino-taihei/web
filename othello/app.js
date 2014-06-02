@@ -137,19 +137,28 @@ function drawGameBoard() {
 }
 
 /*
- * プレイヤーモードを選択するリストボックスHTMLを生成する
+ * プレイヤーモードを選択するセレクトボックスHTMLを生成する
  */
 function makePlayerModeSelector(target_player) {
   var ms = []; // modeSelect
-  ms.push('<select name="' + target_player + '">');
+  ms.push('<form name="' + target_player + '_mode">');
+  ms.push('<select name="' + target_player + '" onChange="changePlayerMode()">');
   for (var i = 0; i < MODE_LIST.length; i++) {
     ms.push('<option>');
     ms.push(MODE_LIST[i]);
     ms.push('</option>');
   }
   ms.push('</select>');
-  console.log(ms.join(''));
+  ms.push('</form>');
   return ms.join('');
+}
+
+/*
+ * セレクトボックス変更時にプレイヤーモード変数をセットする
+ */
+function changePlayerMode() {
+  player_white = MODE_LIST[document.white_mode.white.selectedIndex];
+  player_black = MODE_LIST[document.black_mode.black.selectedIndex];
 }
 
 /*
