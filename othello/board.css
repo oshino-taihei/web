@@ -5,6 +5,7 @@ table  {
 td {
   border: solid 1px;
   padding: 0.5em;
+  text-align: center;
 }
 
 table .cell
@@ -46,3 +47,11 @@ table .candi > .disc
   opacity: 0.2;
 }
 
+td .tri
+{
+  width: 0;
+  height: 0;
+  border: 1em solid transparent;
+  border-top: 1em solid #f00;
+  text-align: center;
+}
